@@ -1,0 +1,8 @@
+data/
+*.docx
+*.sql
+*.pyc
+variables.json
+project-template.zip
+.DS_Store
+udac_example_dag.py
