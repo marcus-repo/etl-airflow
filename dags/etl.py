@@ -17,19 +17,21 @@ from helpers import SqlQueries
 default_args = {
     'owner': 'marcus',
     'depends_on_past': False, 
-    'retries': 0,
+    'retries': 0, #3
     'retry_delay': timedelta(minutes=5),
     'email_on_retry': False,
+    #'catchup': True,
     'start_date': datetime(2018, 11, 1, 0, 0, 0, 0),
-    'end_date': datetime(2018, 12, 1, 0, 0, 0, 0)
+    'end_date': datetime(2018, 11, 30, 0, 0, 0, 0) #must be removed
 }
 
-dag = DAG('sparkify',
+dag = DAG('sparkify-airflow',
           default_args=default_args,
           description='Load and transform data in Redshift with Airflow',
-          schedule_interval='@daily',
-          catchup=False,
-          max_active_runs=1
+          schedule_interval='@monthly',
+          #schedule_interval='@daily',
+          catchup=True,
+          #max_active_runs=1 #must be removed
         )
 
 start_operator = DummyOperator(task_id='Begin_execution', dag=dag)
@@ -50,7 +52,8 @@ stage_events_to_redshift = StageToRedshiftOperator(
     table='staging_events',
     clear_table=False,
     s3_bucket='udacity-dend',
-    s3_key='log-data/{execution_date.year}/{execution_date.month}/{ds}-events.json',
+    #s3_key='log-data/{execution_date.year}/{execution_date.month}/{ds}-events.json',
+    s3_key='log-data/{execution_date.year}/{execution_date.month}',
     json_path='log_json_path.json'
 )
 
@@ -63,13 +66,17 @@ stage_songs_to_redshift = StageToRedshiftOperator(
     clear_table=True,
     s3_bucket='udacity-dend',
     #s3_key='song-data/A/A/A/TRAAAAK128F9318786.json'
-    s3_key='song-data/A/A/A/',
+    s3_key='song-data/A/A/',
     json_path='auto'
 )
 
 load_songplays_table = LoadFactOperator(
     task_id='Load_songplays_fact_table',
-    dag=dag
+    dag=dag,
+    redshift_conn_id="redshift",
+    table='songplays',
+    clear_table=False,
+    sql=SqlQueries.songplay_table_insert
 )
 
 load_user_dimension_table = LoadDimensionOperator(
