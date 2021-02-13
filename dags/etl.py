@@ -17,7 +17,7 @@ from helpers import SqlQueries
 default_args = {
     'owner': 'marcus',
     'depends_on_past': False, 
-    'retries': 3,
+    'retries': 0,
     'retry_delay': timedelta(minutes=5),
     'email_on_retry': False,
     'start_date': datetime(2019, 1, 12)
@@ -47,7 +47,13 @@ stage_events_to_redshift = StageToRedshiftOperator(
 
 stage_songs_to_redshift = StageToRedshiftOperator(
     task_id='Stage_songs',
-    dag=dag
+    dag=dag,
+    redshift_conn_id='redshift',
+    aws_credentials_id='aws_credentials',
+    table='staging_songs',
+    s3_bucket='udacity-dend',
+    #s3_key='song-data/A/A/A/TRAAAAK128F9318786.json'
+    s3_key='song-data/A/A/A/'
 )
 
 load_songplays_table = LoadFactOperator(
