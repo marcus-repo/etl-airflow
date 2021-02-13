@@ -1,6 +1,6 @@
 data/
+aws.cfg
 *.docx
-*.sql
 *.pyc
 variables.json
 project-template.zip
