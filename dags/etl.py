@@ -20,7 +20,7 @@ default_args = {
     'retries': 0, #3
     'retry_delay': timedelta(minutes=5),
     'email_on_retry': False,
-    #'catchup': True,
+    #'catchup': False,
     'start_date': datetime(2018, 11, 1, 0, 0, 0, 0),
     'end_date': datetime(2018, 11, 30, 0, 0, 0, 0) #must be removed
 }
@@ -66,8 +66,8 @@ stage_songs_to_redshift = StageToRedshiftOperator(
     clear_table=True,
     s3_bucket='udacity-dend',
     #s3_key='song-data/A/A/A/TRAAAAK128F9318786.json'
-    s3_key='song-data/A/A/A',
-    json_path='auto'
+    s3_key='song-data/A/A',
+    #json_path='auto'
 )
 
 load_songplays_table = LoadFactOperator(
@@ -119,14 +119,35 @@ run_quality_checks = DataQualityOperator(
     task_id='Run_data_quality_checks',
     dag=dag,
     redshift_conn_id="redshift",
-    table='time'
-    #sql=SqlQueries.time_table_insert  
-    #provide_context=True,
-    #params={
-    #    'table': 'time',
-    #}
+    dq_params = {
+        'has_rows':['time','users','songs','artists','songplays'],
+        'has_nulls':
+            {'time':['start_time'],
+              'users':['userid'],
+              'songs':['songid'],
+              'artists':['artistid'],
+              'songplays':['playid', 'start_time']}     
+    }
 )
 
+# full data quality test - to be removed
+# run_quality_checks = DataQualityOperator(
+#     task_id='Run_data_quality_checks',
+#     dag=dag,
+#     redshift_conn_id="redshift",
+#     dq_params = {
+#         'has_rows':['time','users','songs','artists','songplays'],
+#         'has_nulls':
+#             {'time':['start_time'],
+#               'users':['userid'],
+#               'songs':['songid'],
+#               'artists':['artistid'],
+#               'songplays':['playid', 'userid','start_time',
+#                           'songid','artistid']}     
+#     }
+# )
+
+    
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
 
 start_operator >> create_tables
