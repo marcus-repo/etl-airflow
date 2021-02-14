@@ -8,3 +8,4 @@ The goal of this project is to build a consistent Amazon Redshift Data Warehouse
 # x) Ressources
 https://airflow.apache.org/docs/apache-airflow/stable/tutorial.html
 https://docs.aws.amazon.com/redshift/latest/dg/r_TRUNCATE.html
+https://airflow.apache.org/docs/apache-airflow/1.10.1/scheduler.html
