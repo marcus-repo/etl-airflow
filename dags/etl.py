@@ -66,7 +66,7 @@ stage_songs_to_redshift = StageToRedshiftOperator(
     clear_table=True,
     s3_bucket='udacity-dend',
     #s3_key='song-data/A/A/A/TRAAAAK128F9318786.json'
-    s3_key='song-data/A/A/',
+    s3_key='song-data/A/A/A',
     json_path='auto'
 )
 
@@ -117,7 +117,14 @@ load_time_dimension_table = LoadDimensionOperator(
 
 run_quality_checks = DataQualityOperator(
     task_id='Run_data_quality_checks',
-    dag=dag
+    dag=dag,
+    redshift_conn_id="redshift",
+    table='time'
+    #sql=SqlQueries.time_table_insert  
+    #provide_context=True,
+    #params={
+    #    'table': 'time',
+    #}
 )
 
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
