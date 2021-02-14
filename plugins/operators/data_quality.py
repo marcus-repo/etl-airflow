@@ -95,6 +95,7 @@ class DataQualityOperator(BaseOperator):
         # connect to redshift
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
         
+
         # execute has_rows check
         if 'has_rows' in self.dq_params:
             self.has_rows(redshift)
@@ -102,6 +103,3 @@ class DataQualityOperator(BaseOperator):
         # execute has_nulls check
         if 'has_nulls' in self.dq_params:
             self.has_nulls(redshift)
-            
-
-
