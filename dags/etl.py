@@ -31,7 +31,7 @@ dag = DAG('sparkify-airflow',
           schedule_interval='@monthly',
           #schedule_interval='@daily',
           catchup=True,
-          #max_active_runs=1 #must be removed
+          max_active_runs=1 #must be removed
         )
 
 start_operator = DummyOperator(task_id='Begin_execution', dag=dag)
@@ -81,22 +81,38 @@ load_songplays_table = LoadFactOperator(
 
 load_user_dimension_table = LoadDimensionOperator(
     task_id='Load_user_dim_table',
-    dag=dag
+    dag=dag,
+    redshift_conn_id="redshift",
+    table='users',
+    clear_table=True,
+    sql=SqlQueries.user_table_insert
 )
 
 load_song_dimension_table = LoadDimensionOperator(
     task_id='Load_song_dim_table',
-    dag=dag
+    dag=dag,
+    redshift_conn_id="redshift",
+    table='songs',
+    clear_table=True,
+    sql=SqlQueries.song_table_insert
 )
 
 load_artist_dimension_table = LoadDimensionOperator(
     task_id='Load_artist_dim_table',
-    dag=dag
+    dag=dag,
+    redshift_conn_id="redshift",
+    table='artists',
+    clear_table=True,
+    sql=SqlQueries.artist_table_insert
 )
 
 load_time_dimension_table = LoadDimensionOperator(
     task_id='Load_time_dim_table',
-    dag=dag
+    dag=dag,
+    redshift_conn_id="redshift",
+    table='time',
+    clear_table=True,
+    sql=SqlQueries.time_table_insert
 )
 
 run_quality_checks = DataQualityOperator(
