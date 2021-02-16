@@ -6,8 +6,6 @@ class DataQualityOperator(BaseOperator):
 
     ui_color = '#89DA59'
     
-
-
     @apply_defaults
     def __init__(self,
                  redshift_conn_id="",
