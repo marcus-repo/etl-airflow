@@ -44,12 +44,13 @@ udacity-dend
 
 ### Explanation:
 
-**Pipeline:** </br>
+**Files:** </br>
 - **create_tables.py:** *python script to create the AWS Redshift database tables.*
 - **etl.py:** *Airflow-Python script which reads the JSON sourcefiles and inserts it into the AWS Redshift database tables.*
-- **README.md** *Describes the project.*
 - **sql_queries.py:** *Contains sql statements to load data from staging to destination tables.*
 - **operators (folder):**  *Airflow custom operators used for data loading and quality checks.*
+- **README.md**: *Describes the project.*
+- **requirements.txt**: *Packages needed for airflow docker (see ressources: puckel)* 
 
 **Source Data:** </br>
 - log-data/ and song-data/ contains JSON files collected from the app.</br>
