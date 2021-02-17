@@ -2,9 +2,11 @@ data/
 aws.cfg
 *.docx
 *.pyc
+*checkpoint*.*
 variables.json
 project-template.zip
 .DS_Store
 udac_example_dag.py
 README_2.md
 Airflow_DAG_Detailed.png
+.ipynb_checkpoints
