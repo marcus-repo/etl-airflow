@@ -15,8 +15,6 @@ class DataQualityOperator(BaseOperator):
         super(DataQualityOperator, self).__init__(*args, **kwargs)
         self.redshift_conn_id = redshift_conn_id
         self.dq_params=dq_params
-        #self.tables = tables
-        #self.table = kwargs["params"]["table"]
         
         
     def has_rows(self, redshift):
@@ -80,6 +78,7 @@ class DataQualityOperator(BaseOperator):
                                      .format(table=table,
                                              field=field,
                                              num_records=num_records))
+                
                 # data quality test passed
                 self.log.info("Data quality on table.field {table}.{field} "\
                               "check passed with {num_records} NULL rows"

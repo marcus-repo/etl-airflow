@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-import os
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators import (    
@@ -11,27 +10,24 @@ from airflow.operators import (
 )
 from helpers import SqlQueries
 
-# AWS_KEY = os.environ.get('AWS_KEY')
-# AWS_SECRET = os.environ.get('AWS_SECRET')
 
 default_args = {
     'owner': 'marcus',
     'depends_on_past': False, 
-    'retries': 0, #3
+    'retries': 3,
     'retry_delay': timedelta(minutes=5),
     'email_on_retry': False,
-    #'catchup': False,
-    'start_date': datetime(2018, 11, 1, 0, 0, 0, 0),
-    'end_date': datetime(2018, 11, 30, 0, 0, 0, 0) #must be removed
+    'catchup': False,
+    'start_date': datetime(2018, 11, 1)
+    #'end_date': datetime(2018, 11, 30)
 }
 
 dag = DAG('sparkify-airflow',
           default_args=default_args,
           description='Load and transform data in Redshift with Airflow',
-          #schedule_interval='@monthly',
-          schedule_interval='@daily',
-          catchup=True,
-          #max_active_runs=1 #must be removed
+          schedule_interval='0 * * * *'
+          #,catchup=True
+          #,max_active_runs=1
         )
 
 start_operator = DummyOperator(task_id='Begin_execution', dag=dag)
@@ -66,8 +62,7 @@ stage_songs_to_redshift = StageToRedshiftOperator(
     clear_table=True,
     s3_bucket='udacity-dend',
     #s3_key='song-data/A/A/A/TRAAAAK128F9318786.json'
-    s3_key='song-data/A/A',
-    #json_path='auto'
+    s3_key='song-data'
 )
 
 load_songplays_table = LoadFactOperator(
@@ -123,31 +118,15 @@ run_quality_checks = DataQualityOperator(
         'has_rows':['time','users','songs','artists','songplays'],
         'has_nulls':
             {'time':['start_time'],
-              'users':['userid'],
-              'songs':['songid'],
-              'artists':['artistid'],
-              'songplays':['playid', 'start_time']}     
+             'users':['userid'],
+             'songs':['songid'],
+             'artists':['artistid'],
+             'songplays':['playid', 'start_time']}     
     }
 )
 
-    
+
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
-
-
-# start_operator >> create_tables
-# create_tables >> stage_events_to_redshift
-# create_tables >> stage_songs_to_redshift
-# stage_events_to_redshift >> load_songplays_table
-# stage_songs_to_redshift >> load_songplays_table
-# load_songplays_table >> load_song_dimension_table
-# load_songplays_table >> load_user_dimension_table
-# load_songplays_table >> load_artist_dimension_table
-# load_songplays_table >> load_time_dimension_table
-# load_song_dimension_table >> run_quality_checks
-# load_user_dimension_table >> run_quality_checks
-# load_artist_dimension_table >> run_quality_checks
-# load_time_dimension_table >> run_quality_checks
-# run_quality_checks >> end_operator
 
 start_operator >> create_tables
 create_tables >> [stage_events_to_redshift, 

@@ -29,7 +29,7 @@ class LoadDimensionOperator(BaseOperator):
         # connect to redshift
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
         
-        # clean redshift destination
+        # clear redshift destination
         if self.clear_table:
             self.log.info("Clearing data from destination Redshift table {}"
                           .format(self.table))
