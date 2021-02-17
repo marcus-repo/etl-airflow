@@ -28,10 +28,10 @@ default_args = {
 dag = DAG('sparkify-airflow',
           default_args=default_args,
           description='Load and transform data in Redshift with Airflow',
-          schedule_interval='@monthly',
-          #schedule_interval='@daily',
+          #schedule_interval='@monthly',
+          schedule_interval='@daily',
           catchup=True,
-          max_active_runs=1 #must be removed
+          #max_active_runs=1 #must be removed
         )
 
 start_operator = DummyOperator(task_id='Begin_execution', dag=dag)
@@ -52,8 +52,8 @@ stage_events_to_redshift = StageToRedshiftOperator(
     table='staging_events',
     clear_table=False,
     s3_bucket='udacity-dend',
-    #s3_key='log-data/{execution_date.year}/{execution_date.month}/{ds}-events.json',
-    s3_key='log-data/{execution_date.year}/{execution_date.month}',
+    s3_key='log-data/{execution_date.year}/{execution_date.month}/{ds}-events.json',
+    #s3_key='log-data/{execution_date.year}/{execution_date.month}',
     json_path='log_json_path.json'
 )
 
